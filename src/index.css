@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.navbar {
+  height: 50px;
+}
+
+
+
+.card {
+  height: 36rem
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: rgb(224 80 80);
+  font-size: 1.5rem;
+  font-family: cursive;
+  width: 10%;
+}
+
+.navbar-brand:hover {
+  color: rgb(224 80 80);
+  font-size: 1.5rem;
+
+}
+
+
+li.nav-item {
+  margin-left: 40px;
+}
