@@ -1,71 +1,98 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 import Newitem from './Newitem'
 import Proptypes from 'prop-types'
+import Spinner from './Spinner'
 
-export default class News extends Component {
 
 
-    static defaultProps = {
-        country: 'in',
-        pageSize: 8,
-        page: 1,
-        category: 'sports'
-    }
+const News = (props) => {
 
-    static propTypes = {
-        country: Proptypes.string,
-        pageSize: Proptypes.number,
-        page: Proptypes.number,
-        category: Proptypes.string
-    }
 
-    articles = []
+    const [articles, setArticles] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(1)
+    const [totalResults, setTotalResults] = useState(0)
 
-    async componentDidMount() {
 
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=6b99d22fb9e14378971023c511031e7d&pageSize=${this.props.pageSize}`
-        let data = await fetch(url)
-        let parseddata = await data.json()
-        console.log(parseddata)
-        this.setState({ articles: parseddata.articles })
-    }
-    constructor() {
-        super()
 
-        this.state = {
-            articles: this.articles,
-            loading: false,
+
+    useEffect(() => {
+        const c = async () => {
+
+            let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.api}&pageSize=${props.pageSize}&page=${page}`
+            setLoading(true)
+            let data = await fetch(url)
+            let parseddata = await data.json()
+            setLoading(false)
+            setArticles(parseddata.articles)
+            setTotalResults(parseddata.totalResults)
 
         }
+        c()
+    }, [page, props.country, props.category, props.api, props.pageSize])
 
 
-        console.log("i am a constructor")
 
+    const handleprevclick = async () => {
+
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.api}&pageSize=${props.pageSize}&page=${page - 1}`
+        setLoading(true)
+
+        let data = await fetch(url)
+        let parseddata = await data.json()
+        setLoading(false)
+        setArticles(parseddata.articles)
+        setPage(page - 1)
     }
-    render() {
-        return (
-            <>
-                <div className='container my-3 d-flex justify-content-center'>
-                    <div className='row' >
-                        {this.state.articles.map((element) => {
 
-                            return <div className="col-md-3" key={element.url}>
+    const handlenextclick = async () => {
 
-                                <Newitem title={element.title} description={element.description} imageUrl={element.urlToImage} url={element.url} />
-                            </div>
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.api}&pageSize=${props.pageSize}&page=${page + 1}`
+        setLoading(true)
 
-                        })}
+        let data = await fetch(url)
+        let parseddata = await data.json()
+        setLoading(false)
+        setArticles(parseddata.articles)
+        setPage(page + 1)
+    }
 
-                        <div className="d-flex justify-content-between buttoncontainer">
-                            <button type="button" className="btn btn-dark" style={{ '--bs-btn-padding-y': '.50rem', '--bs-btn-padding-x': '1rem', '--bs-btn-font-size': '.75rem', width: '10%' }}>Previous</button>
-                            <button type="button" className="btn btn-dark" style={{ '--bs-btn-padding-y': '.50rem', '--bs-btn-padding-x': '1rem', '--bs-btn-font-size': '.75rem', width: '10%' }}>Next</button>
+
+    return (
+        <>
+            <div className='container my-3 ' style={{ height: '140vh' }}>
+                {loading && <Spinner />}
+                <div className='row' >
+                    {!loading && articles.map((element) => {
+
+                        return <div className="col-md-3" key={element.url}>
+                            <Newitem title={element.title} description={element.description} imageUrl={element.urlToImage} url={element.url} date={element.publishedAt} />
                         </div>
-                    </div>
+
+                    })}
                 </div>
-            </>
+            </div>
+            <div className="container d-flex justify-content-between align-items-end">
+                <button type="button" onClick={handleprevclick} disabled={page === 1} className="btn btn-dark" style={{ '--bs-btn-padding-y': '.50rem', '--bs-btn-padding-x': '1rem', '--bs-btn-font-size': '.75rem', width: '10%' }}> <span>&#8592;</span>  Previous</button>
+                <button type="button" onClick={handlenextclick} disabled={page === Math.ceil(totalResults / 8)} className="btn btn-dark" style={{ '--bs-btn-padding-y': '.50rem', '--bs-btn-padding-x': '1rem', '--bs-btn-font-size': '.75rem', width: '10%' }}>Next <span>&#8594;</span></button>
+            </div>
+        </>
+    )
 
-
-
-        )
-    }
 }
+News.defaultProps = {
+    country: 'us',
+    pageSize: 8,
+    page: 1,
+    category: 'general',
+
+
+}
+News.propTypes = {
+    country: Proptypes.string,
+    pageSize: Proptypes.number,
+    page: Proptypes.number,
+    category: Proptypes.string
+
+}
+export default News

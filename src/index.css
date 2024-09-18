@@ -16,12 +16,6 @@ code {
   height: 50px;
 }
 
-
-
-.card {
-  height: 36rem
-}
-
 .navbar-brand {
   font-weight: bold;
   color: rgb(224 80 80);
@@ -36,6 +30,9 @@ code {
 
 }
 
+.card {
+  height: 26rem
+}
 
 li.nav-item {
   margin-left: 40px;
